@@ -1,0 +1,29 @@
+{
+  "name": "primetime-client",
+  "version": "1.0.0",
+  "description": "PrimeTime Media Server Client",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "media",
+    "player",
+    "streaming"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.primetime.client",
+    "productName": "PrimeTime Client",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    }
+  }
+}
