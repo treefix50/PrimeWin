@@ -207,17 +207,23 @@ async function loadLibrary(additionalParams = {}) {
             case 'continue':
                 const playbackStates = await apiClient.getAllPlaybackStates(clientId, true);
                 if (playbackStates && playbackStates.length > 0) {
-                    // Get media items for playback states
-                    const mediaIds = playbackStates.map(p => p.mediaId);
-                    const allItems = await apiClient.getLibrary({ limit: 100 });
-                    items = allItems.filter(item => mediaIds.includes(item.id));
-                    // Add playback info
-                    items.forEach(item => {
-                        const playback = playbackStates.find(p => p.mediaId === item.id);
-                        if (playback) {
-                            item.playbackState = playback;
-                        }
-                    });
+                    const playbackById = new Map(playbackStates.map(state => [state.mediaId, state]));
+                    const mediaIds = Array.from(playbackById.keys());
+                    const mediaItems = await Promise.all(
+                        mediaIds.map(async (id) => {
+                            try {
+                                const item = await apiClient.getMediaItem(id);
+                                if (item) {
+                                    item.playbackState = playbackById.get(id);
+                                }
+                                return item;
+                            } catch (error) {
+                                console.error(`Failed to load media item ${id}:`, error);
+                                return null;
+                            }
+                        })
+                    );
+                    items = mediaItems.filter(Boolean);
                 }
                 break;
         }
