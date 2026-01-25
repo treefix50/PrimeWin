@@ -274,7 +274,7 @@ function createMediaCard(item) {
     
     if (item.posterPath) {
         const img = document.createElement('img');
-        img.src = apiClient.getPosterUrl(item.id);
+        img.src = apiClient.getPosterUrlWithToken(item.id);
         img.alt = item.title;
         img.onerror = () => {
             img.style.display = 'none';
@@ -441,7 +441,7 @@ async function showDetailModal(item) {
     // Set poster
     const posterImg = document.getElementById('detail-poster-img');
     if (item.posterPath) {
-        posterImg.src = apiClient.getPosterUrl(item.id);
+        posterImg.src = apiClient.getPosterUrlWithToken(item.id);
         posterImg.style.display = 'block';
     } else {
         posterImg.style.display = 'none';
@@ -659,7 +659,7 @@ async function playMedia(item) {
     showPlayerScreen();
     
     const video = document.getElementById('video-player');
-    const streamUrl = apiClient.getStreamUrl(item.id);
+    const streamUrl = apiClient.getStreamUrlWithToken(item.id);
     
     // Set video source with auth token
     video.src = streamUrl;
