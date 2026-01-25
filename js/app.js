@@ -494,6 +494,16 @@ async function showDetailModal(item) {
             nfo.directors && nfo.directors.length > 0 ? nfo.directors.join(', ') : 'Keine Informationen';
         
         // Additional metadata - outline, tagline, mpaa, premiered
+        const metaEl = document.querySelector('.detail-meta');
+        if (metaEl) {
+            const baseMetaIds = new Set(['detail-year', 'detail-rating', 'detail-runtime']);
+            metaEl.querySelectorAll('span').forEach(span => {
+                if (!baseMetaIds.has(span.id)) {
+                    span.remove();
+                }
+            });
+        }
+
         const additionalMeta = [];
         if (nfo.mpaa) additionalMeta.push(`FSK: ${nfo.mpaa}`);
         if (nfo.premiered) additionalMeta.push(`Premiere: ${nfo.premiered}`);
@@ -510,7 +520,6 @@ async function showDetailModal(item) {
         }
         
         // Update meta section with additional info
-        const metaEl = document.querySelector('.detail-meta');
         if (additionalMeta.length > 0 && metaEl) {
             additionalMeta.forEach(meta => {
                 const span = document.createElement('span');
