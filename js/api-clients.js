@@ -150,6 +150,19 @@ class PrimeTimeApiClient {
         return await this.request(`/items/${id}/nfo`);
     }
 
+    buildMediaUrl(path, params = {}) {
+        const url = new URL(`${this.baseUrl}${path}`);
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                url.searchParams.set(key, value);
+            }
+        });
+        if (this.token) {
+            url.searchParams.set('token', this.token);
+        }
+        return url.toString();
+    }
+
     getStreamUrl(id, profile = null) {
         let url = `${this.baseUrl}/items/${id}/stream`;
         if (profile) {
@@ -158,12 +171,21 @@ class PrimeTimeApiClient {
         return url;
     }
 
+    getStreamUrlWithToken(id, profile = null) {
+        const params = profile ? { profile } : {};
+        return this.buildMediaUrl(`/items/${id}/stream`, params);
+    }
+
     getHLSStreamUrl(id, profile = '720p') {
         return `${this.baseUrl}/items/${id}/stream.m3u8?profile=${encodeURIComponent(profile)}`;
     }
 
     getPosterUrl(id) {
         return `${this.baseUrl}/items/${id}/poster`;
+    }
+
+    getPosterUrlWithToken(id) {
+        return this.buildMediaUrl(`/items/${id}/poster`);
     }
 
     async posterExists(id) {
