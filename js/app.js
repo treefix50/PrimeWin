@@ -16,6 +16,7 @@ function initializeApp() {
     // Try to restore session
     const serverUrl = localStorage.getItem('primeTimeServerUrl') || 'http://localhost:8080';
     apiClient = new PrimeTimeApiClient(serverUrl);
+    registerUnauthorizedHandler(apiClient);
     
     if (apiClient.restoreSession()) {
         // Validate session
@@ -100,6 +101,7 @@ async function handleLogin(e) {
     
     try {
         apiClient = new PrimeTimeApiClient(serverUrl);
+        registerUnauthorizedHandler(apiClient);
         await apiClient.login(username, password);
         
         // Store server URL
@@ -131,6 +133,44 @@ function showLoginScreen() {
     document.getElementById('login-screen').classList.add('active');
     document.getElementById('main-screen').classList.remove('active');
     document.getElementById('player-screen').classList.remove('active');
+}
+
+function registerUnauthorizedHandler(client) {
+    client.setUnauthorizedHandler(async () => {
+        handleUnauthorized();
+    });
+}
+
+function handleUnauthorized() {
+    resetUiForLogin();
+    showLoginScreen();
+}
+
+function resetUiForLogin() {
+    stopPlayback();
+    closeDetailModal();
+    currentMediaItems = [];
+    currentPlayingMedia = null;
+    currentView = 'home';
+
+    document.getElementById('user-name').textContent = '';
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.view === 'home');
+    });
+
+    const grid = document.getElementById('library-grid');
+    grid.innerHTML = '';
+    const emptyState = document.getElementById('empty-state');
+    emptyState.style.display = 'none';
+    document.getElementById('loading').style.display = 'none';
+
+    document.getElementById('search-input').value = '';
+    document.getElementById('genre-filter').value = '';
+    document.getElementById('year-filter').value = '';
+
+    const loginError = document.getElementById('login-error');
+    loginError.textContent = 'Sitzung abgelaufen. Bitte erneut anmelden.';
+    loginError.style.display = 'block';
 }
 
 function showMainScreen() {

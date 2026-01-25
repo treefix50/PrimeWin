@@ -4,6 +4,7 @@ class PrimeTimeApiClient {
         this.baseUrl = baseUrl.replace(/\/$/, '');
         this.token = null;
         this.session = null;
+        this.onUnauthorized = null;
     }
 
     // Helper method for API requests
@@ -28,6 +29,11 @@ class PrimeTimeApiClient {
             if (response.status === 401) {
                 this.token = null;
                 this.session = null;
+                localStorage.removeItem('primeTimeToken');
+                localStorage.removeItem('primeTimeSession');
+                if (typeof this.onUnauthorized === 'function') {
+                    await this.onUnauthorized();
+                }
                 throw new Error('Unauthorized - Session expired');
             }
 
@@ -108,6 +114,10 @@ class PrimeTimeApiClient {
             return true;
         }
         return false;
+    }
+
+    setUnauthorizedHandler(handler) {
+        this.onUnauthorized = handler;
     }
 
     // Library
