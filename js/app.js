@@ -70,6 +70,17 @@ function setupEventListeners() {
         stopPlayback();
         showMainScreen();
     });
+
+    const overlayPlayBtn = document.getElementById('overlay-play-btn');
+    const overlayFavoriteBtn = document.getElementById('overlay-favorite-btn');
+    const overlayWatchedBtn = document.getElementById('overlay-watched-btn');
+    overlayPlayBtn.addEventListener('click', handleOverlayPlayToggle);
+    overlayFavoriteBtn.addEventListener('click', handleOverlayFavoriteToggle);
+    overlayWatchedBtn.addEventListener('click', handleOverlayWatchedToggle);
+
+    const video = document.getElementById('video-player');
+    video.addEventListener('play', () => updateOverlayPlayButton(video));
+    video.addEventListener('pause', () => updateOverlayPlayButton(video));
     
     // Modal close
     document.querySelector('.modal-close').addEventListener('click', closeDetailModal);
@@ -835,9 +846,14 @@ async function playMedia(item) {
         if (nfo.year) meta.push(nfo.year);
         if (nfo.runtime) meta.push(`${nfo.runtime} min`);
         document.getElementById('player-meta').textContent = meta.join(' • ');
+        updateOverlayInfo(item, nfo);
     } catch (error) {
         document.getElementById('player-meta').textContent = '';
+        updateOverlayInfo(item, null);
     }
+
+    updateOverlayPlayButton(video);
+    updateOverlayActionStates(item.id);
     
     // Try to restore playback position
     try {
@@ -942,6 +958,7 @@ function stopPlayback() {
     const video = document.getElementById('video-player');
     video.pause();
     video.src = '';
+    updateOverlayPlayButton(video);
     
     if (playbackUpdateInterval) {
         clearInterval(playbackUpdateInterval);
@@ -949,6 +966,95 @@ function stopPlayback() {
     }
     
     currentPlayingMedia = null;
+}
+
+function updateOverlayPlayButton(video) {
+    const overlayPlayBtn = document.getElementById('overlay-play-btn');
+    if (!overlayPlayBtn) return;
+    const isPaused = video.paused || !video.src;
+    overlayPlayBtn.innerHTML = isPaused
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="8 5 19 12 8 19 8 5"></polygon></svg><span>Play</span>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg><span>Pause</span>';
+}
+
+function updateOverlayInfo(item, nfo) {
+    const quality = item?.playback?.profile || 'Auto';
+    const subtitleText = nfo?.subtitles ? `${nfo.subtitles} Subs` : 'Auto';
+    const audioText = nfo?.audio ? nfo.audio : 'Original';
+    document.getElementById('player-info-quality').textContent = `Qualität: ${quality}`;
+    document.getElementById('player-info-subs').textContent = `Untertitel: ${subtitleText}`;
+    document.getElementById('player-info-audio').textContent = `Audio: ${audioText}`;
+}
+
+async function updateOverlayActionStates(mediaId) {
+    if (!mediaId) return;
+    try {
+        const [isFavorite, isWatched] = await Promise.all([
+            apiClient.isFavorite(mediaId),
+            apiClient.isWatched(mediaId)
+        ]);
+        setOverlayFavoriteState(isFavorite);
+        setOverlayWatchedState(isWatched);
+    } catch (error) {
+        console.error('Failed to update overlay actions:', error);
+    }
+}
+
+function setOverlayFavoriteState(isFavorite) {
+    const overlayFavoriteBtn = document.getElementById('overlay-favorite-btn');
+    overlayFavoriteBtn.classList.toggle('is-active', isFavorite);
+    overlayFavoriteBtn.innerHTML = isFavorite
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span>Favorit</span>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span>Favorit</span>';
+}
+
+function setOverlayWatchedState(isWatched) {
+    const overlayWatchedBtn = document.getElementById('overlay-watched-btn');
+    overlayWatchedBtn.classList.toggle('is-active', isWatched);
+    overlayWatchedBtn.innerHTML = isWatched
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Gesehen</span>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Gesehen</span>';
+}
+
+function handleOverlayPlayToggle() {
+    const video = document.getElementById('video-player');
+    if (!video.src) return;
+    if (video.paused) {
+        video.play();
+    } else {
+        video.pause();
+    }
+    updateOverlayPlayButton(video);
+}
+
+async function handleOverlayFavoriteToggle() {
+    if (!currentPlayingMedia) return;
+    try {
+        const isFavorite = await apiClient.isFavorite(currentPlayingMedia.id);
+        if (isFavorite) {
+            await apiClient.removeFromFavorites(currentPlayingMedia.id);
+        } else {
+            await apiClient.addToFavorites(currentPlayingMedia.id);
+        }
+        setOverlayFavoriteState(!isFavorite);
+    } catch (error) {
+        alert(`Fehler: ${error.message}`);
+    }
+}
+
+async function handleOverlayWatchedToggle() {
+    if (!currentPlayingMedia) return;
+    try {
+        const isWatched = await apiClient.isWatched(currentPlayingMedia.id);
+        if (isWatched) {
+            await apiClient.markAsUnwatched(currentPlayingMedia.id);
+        } else {
+            await apiClient.markAsWatched(currentPlayingMedia.id);
+        }
+        setOverlayWatchedState(!isWatched);
+    } catch (error) {
+        alert(`Fehler: ${error.message}`);
+    }
 }
 
 // Utility functions
