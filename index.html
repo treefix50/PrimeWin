@@ -195,46 +195,58 @@
         <div id="detail-modal" class="modal">
             <div class="modal-content">
                 <button class="modal-close">&times;</button>
+                <div class="detail-header">
+                    <div class="detail-backdrop">
+                        <img id="detail-backdrop-img" src="" alt="">
+                        <div class="detail-backdrop-overlay"></div>
+                        <div class="detail-backdrop-content">
+                            <div class="detail-header-text">
+                                <h1 id="detail-title"></h1>
+                                <div id="detail-meta" class="detail-meta detail-meta-chips">
+                                    <span id="detail-year" class="meta-chip"></span>
+                                    <span id="detail-rating" class="meta-chip"></span>
+                                    <span id="detail-runtime" class="meta-chip"></span>
+                                </div>
+                            </div>
+                            <div id="detail-actions" class="detail-actions">
+                                <button id="detail-play-btn" class="btn btn-primary btn-large detail-action-primary">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Abspielen
+                                </button>
+                                <div class="detail-actions-secondary">
+                                    <button id="detail-favorite-btn" class="btn btn-secondary">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
+                                        Favorit
+                                    </button>
+                                    <button id="detail-watched-btn" class="btn btn-secondary">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Gesehen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="detail-container">
                     <div class="detail-poster">
                         <img id="detail-poster-img" src="" alt="">
                     </div>
                     <div class="detail-info">
-                        <h1 id="detail-title"></h1>
-                        <div class="detail-meta">
-                            <span id="detail-year"></span>
-                            <span id="detail-rating"></span>
-                            <span id="detail-runtime"></span>
-                        </div>
                         <div id="detail-genres" class="detail-genres"></div>
                         <p id="detail-plot" class="detail-plot"></p>
-                        <div class="detail-actions">
-                            <button id="detail-play-btn" class="btn btn-primary btn-large">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                                Abspielen
-                            </button>
-                            <button id="detail-favorite-btn" class="btn btn-secondary">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                                Favorit
-                            </button>
-                            <button id="detail-watched-btn" class="btn btn-secondary">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Gesehen
-                            </button>
-                        </div>
                         <div class="detail-cast">
                             <h3>Besetzung</h3>
-                            <p id="detail-actors"></p>
+                            <div id="detail-actors" class="detail-people"></div>
                         </div>
                         <div class="detail-crew">
                             <h3>Regie</h3>
-                            <p id="detail-directors"></p>
+                            <div id="detail-directors" class="detail-people"></div>
                         </div>
                     </div>
                 </div>
