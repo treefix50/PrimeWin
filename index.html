@@ -69,62 +69,83 @@
                 <!-- Sidebar -->
                 <aside class="sidebar">
                     <nav class="nav-menu">
-                        <a href="#" class="nav-item active" data-view="home">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
-                            <span>Home</span>
-                        </a>
-                        <a href="#" class="nav-item" data-view="movies">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
-                                <polyline points="17 2 12 7 7 2"></polyline>
-                            </svg>
-                            <span>Filme</span>
-                        </a>
-                        <a href="#" class="nav-item" data-view="shows">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
-                                <polyline points="17 2 12 7 7 2"></polyline>
-                            </svg>
-                            <span>Serien</span>
-                        </a>
-                        <a href="#" class="nav-item" data-view="favorites">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                            <span>Favoriten</span>
-                        </a>
-                        <a href="#" class="nav-item" data-view="continue">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                            </svg>
-                            <span>Weiter schauen</span>
-                        </a>
-                    </nav>
-                    
-                    <div class="sidebar-footer">
-                        <div class="filter-section">
-                            <h3>Filter</h3>
-                            <select id="genre-filter" class="filter-select">
-                                <option value="">Alle Genres</option>
-                            </select>
-                            <select id="year-filter" class="filter-select">
-                                <option value="">Alle Jahre</option>
-                            </select>
-                            <select id="sort-filter" class="filter-select">
-                                <option value="title">Titel</option>
-                                <option value="modified">Datum</option>
-                                <option value="size">Größe</option>
-                            </select>
+                        <div class="nav-section">
+                            <p class="nav-section-title">Hauptnavigation</p>
+                            <a href="#" class="nav-item active" data-view="home">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                                <span>Startseite</span>
+                            </a>
+                            <a href="#" class="nav-item" data-view="movies">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                                    <polyline points="17 2 12 7 7 2"></polyline>
+                                </svg>
+                                <span>Filme</span>
+                            </a>
+                            <a href="#" class="nav-item" data-view="shows">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                                    <polyline points="17 2 12 7 7 2"></polyline>
+                                </svg>
+                                <span>Serien</span>
+                            </a>
+                            <a href="#" class="nav-item" data-view="continue">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                </svg>
+                                <span>Weitersehen</span>
+                            </a>
                         </div>
-                    </div>
+                        <div class="nav-section">
+                            <p class="nav-section-title">Bibliotheken</p>
+                            <p class="nav-section-empty">Keine zusätzlichen Bibliotheken geladen</p>
+                        </div>
+                        <div class="nav-section">
+                            <p class="nav-section-title">Benutzerbereich</p>
+                            <a href="#" class="nav-item" data-view="favorites">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                                <span>Favoriten</span>
+                            </a>
+                        </div>
+                    </nav>
                 </aside>
 
                 <!-- Content Area -->
                 <main class="content-area">
+                    <div class="content-toolbar">
+                        <div class="toolbar-title">
+                            <h2>Filter/Sortieren</h2>
+                            <p>Genre, Jahr und Sortierung schnell anpassen</p>
+                        </div>
+                        <div class="filter-controls">
+                            <div class="filter-group">
+                                <label for="genre-filter">Genre</label>
+                                <select id="genre-filter" class="filter-select">
+                                    <option value="">Alle Genres</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="year-filter">Jahr</label>
+                                <select id="year-filter" class="filter-select">
+                                    <option value="">Alle Jahre</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="sort-filter">Sortieren</label>
+                                <select id="sort-filter" class="filter-select">
+                                    <option value="title">Titel</option>
+                                    <option value="modified">Datum</option>
+                                    <option value="size">Größe</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Loading Indicator -->
                     <div id="loading" class="loading-container" style="display: none;">
                         <div class="spinner-large"></div>
