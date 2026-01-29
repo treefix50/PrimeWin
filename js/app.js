@@ -231,21 +231,34 @@ async function loadLibrary(additionalParams = {}) {
         // Load based on current view
         switch (currentView) {
             case 'home':
-                items = await apiClient.getLibrary(params);
+                {
+                    const response = await apiClient.getLibrary(params);
+                    items = response?.items ?? response;
+                }
                 break;
             case 'movies':
                 params.type = 'movie';
-                items = await apiClient.getLibrary(params);
+                {
+                    const response = await apiClient.getLibrary(params);
+                    items = response?.items ?? response;
+                }
                 break;
             case 'shows':
                 params.type = 'tvshow';
-                items = await apiClient.getLibrary(params);
+                {
+                    const response = await apiClient.getLibrary(params);
+                    items = response?.items ?? response;
+                }
                 break;
             case 'favorites':
-                items = await apiClient.getFavorites(100);
+                {
+                    const response = await apiClient.getFavorites(100);
+                    items = response?.items ?? response;
+                }
                 break;
             case 'continue':
-                const playbackStates = await apiClient.getAllPlaybackStates(clientId, true);
+                const playbackResponse = await apiClient.getAllPlaybackStates(clientId, true);
+                const playbackStates = playbackResponse?.items ?? playbackResponse;
                 if (playbackStates && playbackStates.length > 0) {
                     const playbackById = new Map(playbackStates.map(state => [state.mediaId, state]));
                     const mediaIds = Array.from(playbackById.keys());
