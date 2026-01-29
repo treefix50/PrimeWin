@@ -575,6 +575,14 @@ async function showDetailModal(item) {
     } else {
         posterImg.style.display = 'none';
     }
+
+    const backdropImg = document.getElementById('detail-backdrop-img');
+    if (item.posterPath) {
+        backdropImg.src = apiClient.getPosterUrlWithToken(item.id);
+        backdropImg.style.display = 'block';
+    } else {
+        backdropImg.style.display = 'none';
+    }
     
     // Clear any previously added dynamic elements
     const existingTagline = document.querySelector('.detail-tagline');
@@ -604,26 +612,24 @@ async function showDetailModal(item) {
         }
         
         // Cast & Crew - Handle both old format (string array) and new format (Actor objects)
-        if (nfo.actors && nfo.actors.length > 0) {
-            const actorText = nfo.actors.map(actor => {
+        const actorList = nfo.actors && nfo.actors.length > 0
+            ? nfo.actors.map(actor => {
                 if (typeof actor === 'string') {
                     return actor;
-                } else if (actor.name) {
-                    // New format with role
+                }
+                if (actor.name) {
                     return actor.role ? `${actor.name} (${actor.role})` : actor.name;
                 }
                 return '';
-            }).filter(a => a).join(', ');
-            document.getElementById('detail-actors').textContent = actorText || 'Keine Informationen';
-        } else {
-            document.getElementById('detail-actors').textContent = 'Keine Informationen';
-        }
-        
-        document.getElementById('detail-directors').textContent = 
-            nfo.directors && nfo.directors.length > 0 ? nfo.directors.join(', ') : 'Keine Informationen';
+            }).filter(Boolean)
+            : [];
+        renderPeopleList(document.getElementById('detail-actors'), actorList);
+
+        const directorList = nfo.directors && nfo.directors.length > 0 ? nfo.directors : [];
+        renderPeopleList(document.getElementById('detail-directors'), directorList);
         
         // Additional metadata - outline, tagline, mpaa, premiered
-        const metaEl = document.querySelector('.detail-meta');
+        const metaEl = document.getElementById('detail-meta');
         if (metaEl) {
             const baseMetaIds = new Set(['detail-year', 'detail-rating', 'detail-runtime']);
             metaEl.querySelectorAll('span').forEach(span => {
@@ -652,6 +658,7 @@ async function showDetailModal(item) {
         if (additionalMeta.length > 0 && metaEl) {
             additionalMeta.forEach(meta => {
                 const span = document.createElement('span');
+                span.className = 'meta-chip';
                 span.textContent = meta;
                 metaEl.appendChild(span);
             });
@@ -725,6 +732,20 @@ async function showDetailModal(item) {
 
 function closeDetailModal() {
     document.getElementById('detail-modal').classList.remove('active');
+}
+
+function renderPeopleList(container, people) {
+    if (!container) {
+        return;
+    }
+    container.innerHTML = '';
+    const list = people && people.length > 0 ? people : ['Keine Informationen'];
+    list.forEach(person => {
+        const pill = document.createElement('span');
+        pill.className = 'detail-person';
+        pill.textContent = person;
+        container.appendChild(pill);
+    });
 }
 
 async function updateDetailButtons(mediaId) {
