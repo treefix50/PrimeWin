@@ -120,6 +120,32 @@ class PrimeTimeApiClient {
         this.onUnauthorized = handler;
     }
 
+    /**
+     * Expected server list schema:
+     * - Array response: [item, ...]
+     * - Object response: { items: [...], total?: number, limit?: number, offset?: number }
+     * - Legacy object response: { results: [...] }
+     */
+    normalizeListResponse(response) {
+        if (Array.isArray(response)) {
+            return response;
+        }
+
+        if (response && typeof response === 'object') {
+            const items = response.items ?? response.results;
+            if (Array.isArray(items)) {
+                const hasMeta = ['total', 'limit', 'offset'].some((key) => key in response);
+                if (hasMeta) {
+                    const { total, limit, offset } = response;
+                    return { items, total, limit, offset };
+                }
+                return items;
+            }
+        }
+
+        return [];
+    }
+
     // Library
     async getLibrary(params = {}) {
         const queryParams = new URLSearchParams();
@@ -136,7 +162,8 @@ class PrimeTimeApiClient {
         const query = queryParams.toString();
         const endpoint = query ? `/library?${query}` : '/library';
         
-        return await this.request(endpoint);
+        const response = await this.request(endpoint);
+        return this.normalizeListResponse(response);
     }
 
     async triggerLibraryScan() {
@@ -239,7 +266,8 @@ class PrimeTimeApiClient {
         const query = params.toString();
         const endpoint = query ? `/playback?${query}` : '/playback';
         
-        return await this.request(endpoint);
+        const response = await this.request(endpoint);
+        return this.normalizeListResponse(response);
     }
 
     // Favorites
@@ -251,7 +279,8 @@ class PrimeTimeApiClient {
         const query = params.toString();
         const endpoint = query ? `/favorites?${query}` : '/favorites';
         
-        return await this.request(endpoint);
+        const response = await this.request(endpoint);
+        return this.normalizeListResponse(response);
     }
 
     async addToFavorites(mediaId) {
@@ -276,7 +305,8 @@ class PrimeTimeApiClient {
         const query = params.toString();
         const endpoint = query ? `/watched?${query}` : '/watched';
         
-        return await this.request(endpoint);
+        const response = await this.request(endpoint);
+        return this.normalizeListResponse(response);
     }
 
     async markAsWatched(mediaId) {
@@ -301,7 +331,8 @@ class PrimeTimeApiClient {
         const query = params.toString();
         const endpoint = query ? `/collections?${query}` : '/collections';
         
-        return await this.request(endpoint);
+        const response = await this.request(endpoint);
+        return this.normalizeListResponse(response);
     }
 
     async createCollection(name, description = null) {
@@ -345,7 +376,8 @@ class PrimeTimeApiClient {
         const query = params.toString();
         const endpoint = query ? `/shows?${query}` : '/shows';
         
-        return await this.request(endpoint);
+        const response = await this.request(endpoint);
+        return this.normalizeListResponse(response);
     }
 
     async getTVShow(id) {
