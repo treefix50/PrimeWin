@@ -811,7 +811,9 @@ function startPlaybackTracking(mediaId, video) {
                     clientId,
                     Math.floor(video.currentTime),
                     Math.floor(video.duration),
-                    percentComplete
+                    percentComplete,
+                    'playing',
+                    'progress'
                 );
             } catch (error) {
                 console.error('Failed to update playback state:', error);
@@ -829,7 +831,46 @@ function startPlaybackTracking(mediaId, video) {
                     clientId,
                     Math.floor(video.currentTime),
                     Math.floor(video.duration),
-                    percentComplete
+                    percentComplete,
+                    'paused',
+                    'pause'
+                );
+            } catch (error) {
+                console.error('Failed to update playback state:', error);
+            }
+        }
+    });
+
+    video.addEventListener('ended', async () => {
+        if (video.duration > 0) {
+            try {
+                await apiClient.updatePlaybackState(
+                    mediaId,
+                    clientId,
+                    Math.floor(video.duration),
+                    Math.floor(video.duration),
+                    100,
+                    'ended',
+                    'ended'
+                );
+            } catch (error) {
+                console.error('Failed to update playback state:', error);
+            }
+        }
+    });
+
+    video.addEventListener('seeking', async () => {
+        if (video.duration > 0) {
+            try {
+                const percentComplete = (video.currentTime / video.duration) * 100;
+                await apiClient.updatePlaybackState(
+                    mediaId,
+                    clientId,
+                    Math.floor(video.currentTime),
+                    Math.floor(video.duration),
+                    percentComplete,
+                    'seeking',
+                    'seeking'
                 );
             } catch (error) {
                 console.error('Failed to update playback state:', error);

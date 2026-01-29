@@ -324,15 +324,27 @@ class PrimeTimeApiClient {
         }
     }
 
-    async updatePlaybackState(mediaId, clientId, positionSeconds, durationSeconds, percentComplete = null) {
+    async updatePlaybackState(
+        mediaId,
+        clientId,
+        positionSeconds,
+        durationSeconds,
+        percentComplete = null,
+        state = 'playing',
+        event = 'progress'
+    ) {
         const payload = {
-            event: 'progress',
-            positionSeconds,
-            durationSeconds,
+            event,
+            position: positionSeconds,
+            duration: durationSeconds,
+            state,
             lastPlayedAt: Math.floor(Date.now() / 1000),
-            percentComplete,
             clientId
         };
+
+        if (Number.isFinite(percentComplete)) {
+            payload.percentComplete = percentComplete;
+        }
 
         return await this.request(`/items/${mediaId}/playback?clientId=${encodeURIComponent(clientId)}`, {
             method: 'POST',
