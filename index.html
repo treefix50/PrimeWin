@@ -173,19 +173,50 @@
         <!-- Video Player Screen -->
         <div id="player-screen" class="screen">
             <div class="player-container">
-                <video id="video-player" class="video-player" controls></video>
-                
-                <div class="player-controls">
-                    <button id="back-btn" class="btn btn-secondary">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <line x1="19" y1="12" x2="5" y2="12"></line>
-                            <polyline points="12 19 5 12 12 5"></polyline>
-                        </svg>
-                        Zurück
-                    </button>
-                    <div class="player-info">
-                        <h2 id="player-title"></h2>
-                        <p id="player-meta"></p>
+                <div class="player-stage">
+                    <video id="video-player" class="video-player" controls controlsList="nodownload noplaybackrate" disablepictureinpicture></video>
+
+                    <div class="player-overlay">
+                        <div class="overlay-bar">
+                            <div class="overlay-left">
+                                <button id="back-btn" class="btn btn-secondary overlay-back">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                                        <polyline points="12 19 5 12 12 5"></polyline>
+                                    </svg>
+                                    Zurück
+                                </button>
+                                <div class="player-info">
+                                    <h2 id="player-title"></h2>
+                                    <p id="player-meta"></p>
+                                </div>
+                            </div>
+                            <div class="overlay-actions">
+                                <button id="overlay-play-btn" class="overlay-button" type="button">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="8 5 19 12 8 19 8 5"></polygon>
+                                    </svg>
+                                    <span>Play</span>
+                                </button>
+                                <button id="overlay-favorite-btn" class="overlay-button" type="button">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                    <span>Favorit</span>
+                                </button>
+                                <button id="overlay-watched-btn" class="overlay-button" type="button">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span>Gesehen</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overlay-info">
+                            <span id="player-info-quality">Qualität: Auto</span>
+                            <span id="player-info-subs">Untertitel: Auto</span>
+                            <span id="player-info-audio">Audio: Original</span>
+                        </div>
                     </div>
                 </div>
             </div>
