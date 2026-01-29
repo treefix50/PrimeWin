@@ -727,8 +727,11 @@ async function playMedia(item) {
     showPlayerScreen();
     
     const video = document.getElementById('video-player');
-    const streamUrl = apiClient.getStreamUrlWithToken(item.id);
+    const streamUrl = item?.playback?.protocol === 'hls'
+        ? apiClient.getHLSStreamUrlWithToken(item.id, item?.playback?.profile || '720p')
+        : apiClient.getStreamUrlWithToken(item.id);
     
+    // Video tags can't set auth headers, so we pass the token via query string.
     // Set video source with auth token
     video.src = streamUrl;
     
