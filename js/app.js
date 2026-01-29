@@ -12,11 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
 });
 
-function initializeApp() {
+async function initializeApp() {
     // Try to restore session
     const serverUrl = localStorage.getItem('primeTimeServerUrl') || 'http://localhost:8080';
     apiClient = new PrimeTimeApiClient(serverUrl);
     registerUnauthorizedHandler(apiClient);
+
+    await runServerDiscovery(apiClient);
     
     if (apiClient.restoreSession()) {
         // Validate session
@@ -102,6 +104,7 @@ async function handleLogin(e) {
     try {
         apiClient = new PrimeTimeApiClient(serverUrl);
         registerUnauthorizedHandler(apiClient);
+        await runServerDiscovery(apiClient);
         await apiClient.login(username, password);
         
         // Store server URL
@@ -116,6 +119,35 @@ async function handleLogin(e) {
         loginBtn.disabled = false;
         loginBtn.querySelector('.btn-text').textContent = 'Anmelden';
         loginBtn.querySelector('.spinner').style.display = 'none';
+    }
+}
+
+async function runServerDiscovery(client) {
+    const errorDiv = document.getElementById('login-error');
+    if (errorDiv) {
+        errorDiv.style.display = 'none';
+    }
+
+    const discovery = await client.discoverServer();
+    if (discovery.success) {
+        localStorage.setItem('primeTimeApiBasePath', client.basePath || '/');
+        return discovery;
+    }
+
+    localStorage.setItem('primeTimeApiBasePath', '/');
+    const message = 'Server-Discovery fehlgeschlagen. Verwende Standardpfad "/".';
+    showDiscoveryError(message);
+    return discovery;
+}
+
+function showDiscoveryError(message) {
+    const errorDiv = document.getElementById('login-error');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+    if (!document.getElementById('login-screen').classList.contains('active')) {
+        alert(message);
     }
 }
 
