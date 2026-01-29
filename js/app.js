@@ -403,6 +403,44 @@ function createMediaCard(item) {
         </div>
     `;
     poster.appendChild(badges);
+
+    // Overlay (hover actions)
+    const overlay = document.createElement('div');
+    overlay.className = 'media-overlay';
+    overlay.innerHTML = `
+        <div class="media-overlay-content">
+            <button class="media-overlay-play" type="button" aria-label="Wiedergabe starten">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"></path>
+                </svg>
+            </button>
+            <div class="media-overlay-actions">
+                <button class="media-overlay-action" type="button" aria-label="Zur Merkliste hinzufügen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 5v14"></path>
+                        <path d="M5 12h14"></path>
+                    </svg>
+                </button>
+                <button class="media-overlay-action" type="button" aria-label="Details anzeigen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M12 10v6"></path>
+                        <path d="M12 7h.01"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
+    overlay.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+    });
+    overlay.querySelector('.media-overlay-play').addEventListener('click', (event) => {
+        event.stopPropagation();
+        showDetailModal(item);
+    });
+    poster.appendChild(overlay);
     
     // Check favorite and watched status
     checkMediaStatus(item.id, badges);
