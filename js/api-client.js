@@ -217,6 +217,10 @@ class PrimeTimeApiClient {
         return `${this.baseUrl}/items/${id}/stream.m3u8?profile=${encodeURIComponent(profile)}`;
     }
 
+    getHLSStreamUrlWithToken(id, profile = '720p') {
+        return this.buildMediaUrl(`/items/${id}/stream.m3u8`, { profile });
+    }
+
     getPosterUrl(id) {
         return `${this.baseUrl}/items/${id}/poster`;
     }
