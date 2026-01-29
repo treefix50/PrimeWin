@@ -1,15 +1,39 @@
 // PrimeTime API Client - JavaScript Implementation
 class PrimeTimeApiClient {
-    constructor(baseUrl) {
+    constructor(baseUrl, basePath = '') {
         this.baseUrl = baseUrl.replace(/\/$/, '');
+        this.basePath = this.normalizeBasePath(basePath);
         this.token = null;
         this.session = null;
         this.onUnauthorized = null;
+        this.discoveryResults = [];
+    }
+
+    normalizeBasePath(basePath) {
+        if (!basePath) {
+            return '';
+        }
+        const trimmed = basePath.trim();
+        if (trimmed === '/' || trimmed === '') {
+            return '';
+        }
+        const withLeadingSlash = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+        return withLeadingSlash.replace(/\/$/, '');
+    }
+
+    setBasePath(basePath) {
+        this.basePath = this.normalizeBasePath(basePath);
+    }
+
+    buildApiUrl(path) {
+        const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+        return `${this.baseUrl}${this.basePath}${normalizedPath}`;
     }
 
     // Helper method for API requests
     async request(endpoint, options = {}) {
-        const url = `${this.baseUrl}${endpoint}`;
+        const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+        const url = `${this.baseUrl}${this.basePath}${normalizedEndpoint}`;
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers
@@ -120,6 +144,60 @@ class PrimeTimeApiClient {
         this.onUnauthorized = handler;
     }
 
+    async discoverServer() {
+        const candidates = [
+            { endpoint: '/version', basePath: '' },
+            { endpoint: '/info', basePath: '' },
+            { endpoint: '/health', basePath: '' },
+            { endpoint: '/api/version', basePath: '/api' },
+            { endpoint: '/api/info', basePath: '/api' },
+            { endpoint: '/api/health', basePath: '/api' },
+            { endpoint: '/api/v1/version', basePath: '/api/v1' },
+            { endpoint: '/api/v1/info', basePath: '/api/v1' },
+            { endpoint: '/api/v1/health', basePath: '/api/v1' }
+        ];
+
+        this.discoveryResults = [];
+
+        for (const candidate of candidates) {
+            const url = `${this.baseUrl}${candidate.endpoint}`;
+            try {
+                const response = await fetch(url, { method: 'GET' });
+                let payload = null;
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    payload = await response.json();
+                } else {
+                    payload = await response.text();
+                }
+
+                const result = {
+                    endpoint: candidate.endpoint,
+                    basePath: candidate.basePath,
+                    status: response.status,
+                    ok: response.ok,
+                    payload
+                };
+                this.discoveryResults.push(result);
+
+                if (response.ok) {
+                    this.setBasePath(candidate.basePath);
+                    return { ...result, success: true };
+                }
+            } catch (error) {
+                this.discoveryResults.push({
+                    endpoint: candidate.endpoint,
+                    basePath: candidate.basePath,
+                    ok: false,
+                    error: error.message
+                });
+            }
+        }
+
+        this.setBasePath('');
+        return { success: false };
+    }
+
     /**
      * Expected server list schema:
      * - Array response: [item, ...]
@@ -188,7 +266,7 @@ class PrimeTimeApiClient {
     }
 
     buildMediaUrl(path, params = {}) {
-        const url = new URL(`${this.baseUrl}${path}`);
+        const url = new URL(this.buildApiUrl(path));
         Object.entries(params).forEach(([key, value]) => {
             if (value !== null && value !== undefined && value !== '') {
                 url.searchParams.set(key, value);
@@ -201,7 +279,7 @@ class PrimeTimeApiClient {
     }
 
     getStreamUrl(id, profile = null) {
-        let url = `${this.baseUrl}/items/${id}/stream`;
+        let url = this.buildApiUrl(`/items/${id}/stream`);
         if (profile) {
             url += `?profile=${encodeURIComponent(profile)}`;
         }
@@ -214,7 +292,7 @@ class PrimeTimeApiClient {
     }
 
     getHLSStreamUrl(id, profile = '720p') {
-        return `${this.baseUrl}/items/${id}/stream.m3u8?profile=${encodeURIComponent(profile)}`;
+        return `${this.buildApiUrl(`/items/${id}/stream.m3u8`)}?profile=${encodeURIComponent(profile)}`;
     }
 
     getHLSStreamUrlWithToken(id, profile = '720p') {
@@ -222,7 +300,7 @@ class PrimeTimeApiClient {
     }
 
     getPosterUrl(id) {
-        return `${this.baseUrl}/items/${id}/poster`;
+        return this.buildApiUrl(`/items/${id}/poster`);
     }
 
     getPosterUrlWithToken(id) {
